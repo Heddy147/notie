@@ -689,7 +689,7 @@ var notie = (function () {
   // select helper variables
   var selectIsShowing = false
 
-  function select (title, cancelText, choices) {
+  function select (title, cancelText, choices, cancelCallback) {
     if (options.colorInfo.length > 0) selectInner.style.backgroundColor = options.colorInfo
     if (options.colorNeutral.length > 0) selectCancel.style.backgroundColor = options.colorNeutral
     if (options.colorText.length > 0) {
@@ -702,18 +702,27 @@ var notie = (function () {
     if (alertIsShowing) {
       // Hide notie.alert
       alertHide(function () {
-        selectShow(title, cancelText, choices)
+        selectShow(title, cancelText, choices, cancelCallback)
       })
     } else {
-      selectShow(title, cancelText, choices)
+      selectShow(title, cancelText, choices, cancelCallback)
     }
   }
 
-  function selectShow (title, cancelText, choices) {
+  function selectShow (title, cancelText, choices, cancelCallback) {
     scrollDisable()
 
     document.getElementById('notie-select-choices').innerHTML = ''
     selectCancel.innerHTML = cancelText
+
+    selectCancel.onclick = function () {
+      selectHide()
+      if (cancelCallback) {
+        setTimeout(function () {
+          cancelCallback()
+        }, (options.animationsDelay + 10))
+      }
+    }
 
     var selectChoicePrevious
 
